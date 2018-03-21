@@ -1,12 +1,12 @@
 package com.saner;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Toast;
 
-import com.saner.util.LogUtil;
+import com.saner.ui.photo.ShowPhotoActivity;
+import com.saner.ui.round.RoundAvatarActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,6 +22,10 @@ public class MainActivity extends AppCompatActivity {
         start(RoundAvatarActivity.class);
     }
 
+    public void onSelectedPhoto(View view){
+//        LogUtil.logd("点击事件");
+        start(ShowPhotoActivity.class);
+    }
 
 
 

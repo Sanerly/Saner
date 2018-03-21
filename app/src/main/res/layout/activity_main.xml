@@ -19,6 +19,8 @@
     <Button
         android:id="@+id/selected_photo"
         android:layout_width="match_parent"
+        android:onClick="onSelectedPhoto"
         android:layout_height="wrap_content"
-        android:text="选择照片"/>
+        android:text="选择照片"
+        tools:ignore="OnClick"/>
 </LinearLayout>
