@@ -45,6 +45,13 @@ public class SelectedAdapter extends RecyclerView.Adapter<SelectedAdapter.ViewHo
         } else {
             holder.mImage.setAlpha(1.0f);
         }
+
+        if (data.isCheckEnabled()){
+            holder.mCheckBox.setEnabled(false);
+        }else {
+            holder.mCheckBox.setEnabled(true);
+        }
+
         holder.mCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

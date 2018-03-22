@@ -103,18 +103,25 @@ public class SelectedActivity extends AppCompatActivity implements SelectedAdapt
 
     @Override
     public void onSelected(PhotoModel data, int pos) {
-        if (isSelectedCount()){
-            if (data.isSelected()) {
-                data.setSelected(false);
-            } else {
+        if (data.isSelected()) {
+            data.setSelected(false);
+        } else {
+            if (isSelectedCount()){
                 data.setSelected(true);
+            }else {
+                String messageFormat ="最多只能选择 %s 张图片";
+                toast(String.format(messageFormat,mSelectedCount));
             }
-            mAdapter.notifyItemChanged(pos);
-        }else {
-            String messageFormat ="最多只能选择 %s 张图片";
-            toast(String.format(messageFormat,mSelectedCount));
         }
-        mButComplete.setEnabled(isEnabled());
+        mAdapter.notifyItemChanged(pos);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mButComplete.setEnabled(isEnabled());
+                setCheckEnabled();
+            }
+        });
+
     }
 
 
@@ -153,6 +160,10 @@ public class SelectedActivity extends AppCompatActivity implements SelectedAdapt
         return false;
     }
 
+    /**
+     * 计算当前选择的数量是否小于设定的数量
+     * @return
+     */
     private boolean isSelectedCount() {
         int count=0;
         for (PhotoModel data : mDatas) {
@@ -161,5 +172,25 @@ public class SelectedActivity extends AppCompatActivity implements SelectedAdapt
             }
         }
         return count<mSelectedCount;
+    }
+
+    /**
+     * 设置CheckBox当选择到最多数量是不可点击
+     */
+    private void setCheckEnabled() {
+        if (!isSelectedCount()){
+            for (PhotoModel data : mDatas) {
+                if (!data.isSelected()) {
+                    data.setCheckEnabled(true);
+                }
+            }
+            mAdapter.notifyDataSetChanged();
+        }else {
+            for (PhotoModel data : mDatas) {
+                data.setCheckEnabled(false);
+            }
+            mAdapter.notifyDataSetChanged();
+        }
+
     }
 }
