@@ -14,7 +14,7 @@ import com.saner.R;
  * Created by sunset on 2018/3/21.
  */
 
-public class ShowPhotoActivity extends AppCompatActivity{
+public class ShowPhotoActivity extends AppCompatActivity {
 
     private ImageView image;
     private TextView text;
@@ -27,22 +27,26 @@ public class ShowPhotoActivity extends AppCompatActivity{
     }
 
     private void init() {
-        image=findViewById(R.id.imageView);
-        text=findViewById(R.id.textView);
+        image = findViewById(R.id.imageView);
+        text = findViewById(R.id.textView);
 
     }
 
 
-    public void onStartSelector(View view){
+    public void onStartSelector(View view) {
 //        LogUtil.logd("点击事件");
-        start(SelectedActivity.class);
+//        start(SelectedActivity.class);
+        SelectedConf mConf = new SelectedConf.Builder()
+                .setMaxCount(12)
+                .setMultiSelected(true)
+                .setColumns(4)
+                .build();
+        SelectedActivity.start(this, mConf);
     }
 
 
-
-
-    public void start(Class<?> cls){
-        Intent intent=new Intent(this,cls);
+    public void start(Class<?> cls) {
+        Intent intent = new Intent(this, cls);
         startActivity(intent);
     }
 }

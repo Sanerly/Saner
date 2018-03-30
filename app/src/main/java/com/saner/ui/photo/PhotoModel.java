@@ -8,6 +8,15 @@ public class PhotoModel {
 
     private String url;
     private boolean isSelected;
+    private boolean isMulti;
+
+    public boolean isMulti() {
+        return isMulti;
+    }
+
+    public void setMulti(boolean multi) {
+        isMulti = multi;
+    }
 
     public String getUrl() {
         return url;

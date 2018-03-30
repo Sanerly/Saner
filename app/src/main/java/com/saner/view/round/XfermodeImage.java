@@ -28,6 +28,7 @@ public class XfermodeImage extends BaseXfermodeImageView{
 
     @Override
     protected Bitmap getBitmap() {
+
         Bitmap bitmap=Bitmap.createBitmap(getWidth(),getHeight(),Bitmap.Config.ARGB_8888);
         Canvas canvas=new Canvas(bitmap);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -37,7 +38,8 @@ public class XfermodeImage extends BaseXfermodeImageView{
 
 //        canvas.drawRoundRect(new RectF(0,0,size,size),50,50,paint);
 //        canvas.drawOval(new RectF(0,0,size,size),paint);
-        canvas.drawArc(new RectF(0,0,size,size),0,270,true,paint);
+
+        canvas.drawArc(new RectF(0,0,size,size),0,360,true,paint);
         return bitmap;
     }
 }

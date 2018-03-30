@@ -4,7 +4,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 
 import com.saner.R;
@@ -38,8 +37,8 @@ public class SelectedAdapter extends RecyclerView.Adapter<SelectedAdapter.ViewHo
         final PhotoModel data = mDatas.get(position);
         PhotoUtil.showImageLayoutMeasure(holder.mImage, mColumns);
         PhotoUtil.load(holder.mImage, data.getUrl());
-        setCheck(data.isSelected(), holder.mCheckBox);
-
+        setImageRes(data.isSelected(), holder.mCheckBox);
+        setDisplay(data.isMulti(),holder.mCheckBox);
         if (data.isSelected()) {
             holder.mImage.setAlpha(0.5f);
         } else {
@@ -60,11 +59,21 @@ public class SelectedAdapter extends RecyclerView.Adapter<SelectedAdapter.ViewHo
         });
     }
 
-    public void setCheck(boolean isShow, ImageView view) {
+    /**
+     *设置选中和未选中使用的图片
+     */
+    private void setImageRes(boolean isShow, ImageView view) {
         int resId = isShow ? R.mipmap.ic_checked : R.mipmap.ic_uncheck;
         view.setImageResource(resId);
     }
 
+    /**
+     *设置多选时显示选择框，单选时隐藏
+     */
+    private void setDisplay(boolean isMulti, ImageView view) {
+        int vis = isMulti ? View.VISIBLE : View.GONE ;
+        view.setVisibility(vis);
+    }
     @Override
     public int getItemCount() {
         return mDatas.size();
