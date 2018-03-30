@@ -23,7 +23,7 @@
         <activity android:name=".ui.photo.ShowPhotoActivity"/>
         <activity
             android:name=".ui.photo.SelectedActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+            android:theme="@style/AppTheme_NotToolbar"/>
     </application>
 
 </manifest>

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -27,7 +28,7 @@ public class SelectedActivity extends AppCompatActivity implements SelectedAdapt
     //列表每行显示的列数
     final int mColumns = 3;
     //最多可选择的图片计数
-    final int mSelectedCount=6;
+    final int SELECTED_COUNT = 6;
 
     private RecyclerView mRecycler;
     private List<PhotoModel> mDatas;
@@ -35,6 +36,8 @@ public class SelectedActivity extends AppCompatActivity implements SelectedAdapt
     private ImageView mImageBack;
     private TextView mTextTitle;
     private Button mButComplete;
+
+    private int mCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +82,7 @@ public class SelectedActivity extends AppCompatActivity implements SelectedAdapt
                     while (cursor.moveToNext()) {
                         PhotoModel photoModel = new PhotoModel();
                         String url = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-                        LogUtil.logd("图片路径********" + url);
+//                        LogUtil.logd("图片路径********" + url);
                         photoModel.setUrl(url);
                         photoModel.setSelected(false);
                         mDatas.add(photoModel);
@@ -96,37 +99,47 @@ public class SelectedActivity extends AppCompatActivity implements SelectedAdapt
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            LogUtil.logd("handler");
+//            LogUtil.logd("handler");
             mAdapter.notifyDataSetChanged();
         }
     };
 
+
     @Override
     public void onSelected(PhotoModel data, int pos) {
+
         if (data.isSelected()) {
             data.setSelected(false);
         } else {
-            if (isSelectedCount()){
+            if (mCount < SELECTED_COUNT) {
                 data.setSelected(true);
-            }else {
-                String messageFormat ="最多只能选择 %s 张图片";
-                toast(String.format(messageFormat,mSelectedCount));
+            } else {
+                String messageFormat = "最多只能选择%s张图片";
+                toast(String.format(messageFormat, SELECTED_COUNT));
             }
         }
-        mAdapter.notifyItemChanged(pos);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mButComplete.setEnabled(isEnabled());
-                setCheckEnabled();
-            }
-        });
+        mCount = getSelectedCount();
 
+        mAdapter.notifyItemChanged(pos);
+        mButComplete.setEnabled(isEnabled());
+        LogUtil.logd("count = " + mCount);
+        setCompleteNum(mCount);
     }
 
 
-    public void toast(String str){
-        Toast.makeText(this,str,Toast.LENGTH_SHORT).show();
+    private void setCompleteNum(int count) {
+        String str;
+        if (count < 1) {
+            str = "完成";
+        } else {
+            str = "(" + count + ")完成";
+        }
+        mButComplete.setText(str);
+    }
+
+
+    public void toast(String str) {
+        Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -151,6 +164,11 @@ public class SelectedActivity extends AppCompatActivity implements SelectedAdapt
      * 检查当前是否有选择中的图片
      * @return
      */
+    /**
+     * 检查当前是否有选择中的图片
+     *
+     * @return
+     */
     private boolean isEnabled() {
         for (PhotoModel data : mDatas) {
             if (data.isSelected()) {
@@ -162,35 +180,18 @@ public class SelectedActivity extends AppCompatActivity implements SelectedAdapt
 
     /**
      * 计算当前选择的数量是否小于设定的数量
+     *
      * @return
      */
-    private boolean isSelectedCount() {
-        int count=0;
+    private int getSelectedCount() {
+        int count = 0;
         for (PhotoModel data : mDatas) {
             if (data.isSelected()) {
+                LogUtil.logd("url = " + data.getUrl());
                 count++;
             }
         }
-        return count<mSelectedCount;
+        return count;
     }
 
-    /**
-     * 设置CheckBox当选择到最多数量是不可点击
-     */
-    private void setCheckEnabled() {
-        if (!isSelectedCount()){
-            for (PhotoModel data : mDatas) {
-                if (!data.isSelected()) {
-                    data.setCheckEnabled(true);
-                }
-            }
-            mAdapter.notifyDataSetChanged();
-        }else {
-            for (PhotoModel data : mDatas) {
-                data.setCheckEnabled(false);
-            }
-            mAdapter.notifyDataSetChanged();
-        }
-
-    }
 }

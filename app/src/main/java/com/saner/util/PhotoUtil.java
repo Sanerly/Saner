@@ -19,8 +19,8 @@ public class PhotoUtil {
     public static void load(ImageView view, String url) {
         Glide.with(view.getContext())
                 .load(url)
-                .error(R.mipmap.ic_launcher)
-                .placeholder(R.mipmap.ic_launcher)
+                .error(R.mipmap.ic_default_image)
+                .placeholder(R.mipmap.ic_default_image)
                 .into(view);
     }
 

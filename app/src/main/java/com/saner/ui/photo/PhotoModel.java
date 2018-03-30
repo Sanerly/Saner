@@ -8,16 +8,6 @@ public class PhotoModel {
 
     private String url;
     private boolean isSelected;
-    private boolean isCheckEnabled;
-
-
-    public boolean isCheckEnabled() {
-        return isCheckEnabled;
-    }
-
-    public void setCheckEnabled(boolean checkEnabled) {
-        isCheckEnabled = checkEnabled;
-    }
 
     public String getUrl() {
         return url;

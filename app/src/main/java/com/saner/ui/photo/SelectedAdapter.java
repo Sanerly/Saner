@@ -38,18 +38,12 @@ public class SelectedAdapter extends RecyclerView.Adapter<SelectedAdapter.ViewHo
         final PhotoModel data = mDatas.get(position);
         PhotoUtil.showImageLayoutMeasure(holder.mImage, mColumns);
         PhotoUtil.load(holder.mImage, data.getUrl());
-        holder.mCheckBox.setChecked(data.isSelected());
+        setCheck(data.isSelected(), holder.mCheckBox);
 
         if (data.isSelected()) {
             holder.mImage.setAlpha(0.5f);
         } else {
             holder.mImage.setAlpha(1.0f);
-        }
-
-        if (data.isCheckEnabled()){
-            holder.mCheckBox.setEnabled(false);
-        }else {
-            holder.mCheckBox.setEnabled(true);
         }
 
         holder.mCheckBox.setOnClickListener(new View.OnClickListener() {
@@ -66,6 +60,10 @@ public class SelectedAdapter extends RecyclerView.Adapter<SelectedAdapter.ViewHo
         });
     }
 
+    public void setCheck(boolean isShow, ImageView view) {
+        int resId = isShow ? R.mipmap.ic_checked : R.mipmap.ic_uncheck;
+        view.setImageResource(resId);
+    }
 
     @Override
     public int getItemCount() {
@@ -75,12 +73,12 @@ public class SelectedAdapter extends RecyclerView.Adapter<SelectedAdapter.ViewHo
     class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView mImage;
-        CheckBox mCheckBox;
+        ImageView mCheckBox;
 
         ViewHolder(View itemView) {
             super(itemView);
-            mImage = itemView.findViewById(R.id.item_photo_image);
-            mCheckBox = itemView.findViewById(R.id.item_photo_box);
+            mImage = itemView.findViewById(R.id.item_image);
+            mCheckBox = itemView.findViewById(R.id.item_check);
         }
 
 
