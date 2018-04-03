@@ -24,6 +24,8 @@
         <activity
             android:name=".ui.photo.SelectedActivity"
             android:theme="@style/AppTheme_NotToolbar"/>
+        <activity android:name=".ui.photo.ClipImageActivity">
+        </activity>
     </application>
 
 </manifest>

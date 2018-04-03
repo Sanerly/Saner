@@ -36,12 +36,14 @@ public class ShowPhotoActivity extends AppCompatActivity {
     public void onStartSelector(View view) {
 //        LogUtil.logd("点击事件");
 //        start(SelectedActivity.class);
-        SelectedConf mConf = new SelectedConf.Builder()
-                .setMaxCount(12)
-                .setMultiSelected(true)
-                .setColumns(4)
-                .build();
-        SelectedActivity.start(this, mConf);
+//        SelectedConf mConf = new SelectedConf.Builder()
+//                .setMaxCount(9)
+//                .setMultiSelected(true)
+//                .setColumns(3)
+//                .build();
+//        SelectedActivity.start(this, mConf);
+
+        ClipImageActivity.start(this);
     }
 
 
