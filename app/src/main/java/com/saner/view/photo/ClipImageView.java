@@ -6,11 +6,13 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
+import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
-import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.saner.util.LogUtil;
 
@@ -18,14 +20,14 @@ import com.saner.util.LogUtil;
  * Created by sunset on 2018/4/11.
  */
 
-public class ClipImageView extends ImageView {
-
+public class ClipImageView extends android.support.v7.widget.AppCompatImageView {
+    private Context mContext;
 
     private float mLastX;
     private float mLastY;
     private RectF mRestrictRect;
     //测试时使用的大小
-    private int spec = ClipBorderView.spec;
+    private int spec;
 
     public ClipImageView(Context context) {
         this(context, null);
@@ -41,8 +43,9 @@ public class ClipImageView extends ImageView {
     }
 
     private void init(Context context) {
+        this.mContext = context;
         postCenter();
-
+        spec = getSpec(ClipBorderView.SPEC);
     }
 
     @Override
@@ -57,14 +60,12 @@ public class ClipImageView extends ImageView {
 
     int mActivePointerId;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
-
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mActivePointerId = event.getPointerId(0);
-
                 mLastX = event.getX();
                 mLastY = event.getY();
                 break;
@@ -75,7 +76,6 @@ public class ClipImageView extends ImageView {
                 }
                 float mx = event.getX(activePointerIndex);
                 float my = event.getY(activePointerIndex);
-
                 drag(mx, my);
                 mLastX = mx;
                 mLastY = my;
@@ -89,9 +89,11 @@ public class ClipImageView extends ImageView {
         //mLastY,mLastX 为上一次触摸的坐标
         float moveX = motionX - mLastX;
         float moveY = motionY - mLastY;
+
+        RectF rectF = getCurrentRectF();
         //边界限制
-        if (mRestrictRect != null) {
-            RectF rectF = getCurrentRectF();
+        if (mRestrictRect != null && rectF!=null) {
+
             if (moveX > 0) {
                 if (rectF.left + moveX > mRestrictRect.left) {
                     moveX = mRestrictRect.left - rectF.left;
@@ -118,18 +120,18 @@ public class ClipImageView extends ImageView {
 
     }
 
-
-    public void setRestrictRect(RectF restrictRect) {
-        this.mRestrictRect = restrictRect;
-    }
-
     /**
      * 获取自己的边界
      *
      * @return
      */
     private RectF getCurrentRectF() {
+        if (getDrawable() == null) {
+            LogUtil.logd("没有设置图片资源");
+            return null;
+        }
         BitmapDrawable drawable = (BitmapDrawable) getDrawable();
+
         Bitmap bitmap = drawable.getBitmap();
         RectF rectF = new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight());
         getImageMatrix().mapRect(rectF);
@@ -170,5 +172,17 @@ public class ClipImageView extends ImageView {
             }
         });
 
+    }
+
+
+    public void setRestrictRect(RectF restrictRect) {
+        this.mRestrictRect = restrictRect;
+    }
+
+
+    public int getSpec(@FloatRange(from = 0.0, to = 1.0) float rate) {
+        DisplayMetrics dm = mContext.getApplicationContext().getResources().getDisplayMetrics();
+        int screenWidth = dm.widthPixels;
+        return (int) (screenWidth / 2 * rate);
     }
 }

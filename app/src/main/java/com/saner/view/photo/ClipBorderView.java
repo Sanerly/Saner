@@ -8,8 +8,10 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Region;
+import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -34,40 +36,33 @@ public class ClipBorderView extends View {
     Context mContext;
 
 
-    /**
-     * 绘制的矩形的宽度
-     */
-    private int mWidth;
 
+    public static float SPEC=0.8f;
 
+    private int spec;
     Paint mPaint;
 
     private void init(Context context) {
+        this.mContext=context;
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setColor(Color.TRANSPARENT);
         mPaint.setStyle(Paint.Style.FILL);
+        spec=getSpec(SPEC);
     }
 
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        mWidth=w;
-    }
-
-   public static int spec=450;
     @SuppressLint("DrawAllocation")
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        int centerX=getWidth()/2;
-        int centerY=getHeight()/2;
+        int centerX = getWidth() / 2;
+        int centerY = getHeight() / 2;
 
-        Path path=new Path();
+        Path path = new Path();
 
-        RectF rectF=new RectF(centerX-spec,centerY-spec,centerX+spec,centerY+spec);
-        path.addOval(rectF,Path.Direction.CW);
-//        path.addRect(rectF, Path.Direction.CW);
+        RectF rectF = new RectF(centerX - spec, centerY - spec, centerX + spec, centerY + spec);
+//        path.addOval(rectF, Path.Direction.CW);
+        path.addRect(rectF, Path.Direction.CW);
         canvas.save();
         canvas.clipPath(path, Region.Op.DIFFERENCE);
         //绘画半透明遮罩
@@ -78,11 +73,19 @@ public class ClipBorderView extends View {
         mPaint.setStrokeWidth(5);
         mPaint.setColor(Color.WHITE);
         mPaint.setStyle(Paint.Style.STROKE);
-        canvas.drawPath(path,mPaint);
+        canvas.drawPath(path, mPaint);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         return false;
     }
+
+
+    public int getSpec(@FloatRange(from = 0.0, to = 1.0) float rate) {
+        DisplayMetrics dm = mContext.getApplicationContext().getResources().getDisplayMetrics();
+        int screenWidth = dm.widthPixels;
+        return (int) (screenWidth / 2 * rate);
+    }
+
 }
