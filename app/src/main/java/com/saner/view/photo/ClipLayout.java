@@ -12,9 +12,6 @@ import android.widget.FrameLayout;
 
 import com.saner.R;
 
-/**
- * Created by sunset on 2018/4/11.
- */
 
 public class ClipLayout extends FrameLayout{
     private Context mContext;
