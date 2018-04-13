@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.saner.R;
-import com.saner.util.PhotoUtil;
+import com.saner.util.SelPhotoUtil;
 
 import java.util.List;
 
@@ -35,8 +35,8 @@ public class SelectedAdapter extends RecyclerView.Adapter<SelectedAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final PhotoModel data = mDatas.get(position);
-        PhotoUtil.showImageLayoutMeasure(holder.mImage, mColumns);
-        PhotoUtil.load(holder.mImage, data.getUrl());
+        SelPhotoUtil.showImageLayoutMeasure(holder.mImage, mColumns);
+        SelPhotoUtil.load(holder.mImage, data.getUrl());
         setImageRes(data.isSelected(), holder.mCheckBox);
         setDisplay(data.isMulti(),holder.mCheckBox);
         if (data.isSelected()) {

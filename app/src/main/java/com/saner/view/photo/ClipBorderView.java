@@ -15,6 +15,8 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.saner.util.LogUtil;
+
 /**
  * Created by sunset on 2018/4/3.
  */
@@ -33,22 +35,19 @@ public class ClipBorderView extends View {
         init(context);
     }
 
-    Context mContext;
-
-
-
-    public static float SPEC=0.8f;
+    private Context mContext;
+    private onBorderListener onBorderListener;
 
     private int spec;
-    Paint mPaint;
+    private Paint mPaint;
 
     private void init(Context context) {
-        this.mContext=context;
+        this.mContext = context;
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setColor(Color.TRANSPARENT);
         mPaint.setStyle(Paint.Style.FILL);
-        spec=getSpec(SPEC);
+//       setSpec(ClipLayout.SPEC_SIZE);
     }
 
     @SuppressLint("DrawAllocation")
@@ -57,12 +56,15 @@ public class ClipBorderView extends View {
         super.onDraw(canvas);
         int centerX = getWidth() / 2;
         int centerY = getHeight() / 2;
-
-        Path path = new Path();
-
+        Path path = null;
         RectF rectF = new RectF(centerX - spec, centerY - spec, centerX + spec, centerY + spec);
-//        path.addOval(rectF, Path.Direction.CW);
-        path.addRect(rectF, Path.Direction.CW);
+        if (onBorderListener != null) {
+            path = onBorderListener.getPath(rectF);
+        }
+        if (path == null || onBorderListener == null) {
+            path = new Path();
+            path.addOval(rectF, Path.Direction.CW);
+        }
         canvas.save();
         canvas.clipPath(path, Region.Op.DIFFERENCE);
         //绘画半透明遮罩
@@ -82,10 +84,18 @@ public class ClipBorderView extends View {
     }
 
 
-    public int getSpec(@FloatRange(from = 0.0, to = 1.0) float rate) {
+    public void setSpec(@FloatRange(from = 0.0, to = 1.0) float rate) {
         DisplayMetrics dm = mContext.getApplicationContext().getResources().getDisplayMetrics();
         int screenWidth = dm.widthPixels;
-        return (int) (screenWidth / 2 * rate);
+        spec = (int) (screenWidth / 2 * rate);
     }
 
+
+    public void setBorderListener(onBorderListener listener) {
+        this.onBorderListener = listener;
+    }
+
+    public interface onBorderListener {
+        Path getPath(RectF rf);
+    }
 }

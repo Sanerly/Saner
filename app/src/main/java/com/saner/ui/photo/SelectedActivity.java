@@ -183,7 +183,7 @@ public class SelectedActivity extends AppCompatActivity implements SelectedAdapt
 
     @Override
     public void onShowPhoto(PhotoModel data, int pos) {
-
+        ClipImageActivity.start(this,data.getUrl());
     }
 
     @Override
