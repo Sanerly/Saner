@@ -1,6 +1,7 @@
 package com.saner.view.round;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
@@ -24,9 +25,12 @@ public class PathImageView extends BasePathImageView {
     }
 
     @Override
-    public Path getPath(RectF rectF) {
+    public Builder getBuilder(RectF rectF) {
         Path path = new Path();
         path.addOval(rectF,  Path.Direction.CW);
-        return path;
+        return Builder.newInstance().setPath(path);
+//        return null;
     }
+
+
 }
