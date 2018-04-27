@@ -7,9 +7,7 @@ import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
-/**
- * Created by sunset on 2018/4/18.
- */
+
 
 public class PathImageView extends BasePathImageView {
     public PathImageView(Context context) {
@@ -28,8 +26,7 @@ public class PathImageView extends BasePathImageView {
     public Builder getBuilder(RectF rectF) {
         Path path = new Path();
         path.addOval(rectF,  Path.Direction.CW);
-        return Builder.newInstance().setPath(path);
-//        return null;
+        return Builder.newInstance().setPath(path).setColor(Color.BLUE).setStrokeWidth(20);
     }
 
 
