@@ -26,7 +26,7 @@ public class PathImageView extends BasePathImageView {
     public Builder getBuilder(RectF rectF) {
         Path path = new Path();
         path.addOval(rectF,  Path.Direction.CW);
-        return Builder.newInstance().setPath(path).setColor(Color.BLUE).setStrokeWidth(20);
+        return Builder.newInstance().setPath(path).setColor(Color.parseColor("#FFE394")).setStrokeWidth(20);
     }
 
 
