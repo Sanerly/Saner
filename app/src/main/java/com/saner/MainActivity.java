@@ -7,6 +7,7 @@ import android.view.View;
 
 import com.saner.ui.photo.ShowPhotoActivity;
 import com.saner.ui.round.RoundAvatarActivity;
+import com.saner.ui.xfermode.XfermodeActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,7 +27,10 @@ public class MainActivity extends AppCompatActivity {
 //        LogUtil.logd("点击事件");
         start(ShowPhotoActivity.class);
     }
-
+    public void Xfermode(View view){
+//        LogUtil.logd("点击事件");
+        start(XfermodeActivity.class);
+    }
 
 
     public void start(Class<?> cls){

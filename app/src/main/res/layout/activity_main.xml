@@ -23,4 +23,12 @@
         android:layout_height="wrap_content"
         android:text="选择照片"
         tools:ignore="OnClick"/>
+
+    <Button
+        android:id="@+id/xfermode"
+        android:layout_width="match_parent"
+        android:onClick="Xfermode"
+        android:layout_height="wrap_content"
+        android:text="Xfermode 混合模式/过渡模式"
+        tools:ignore="OnClick"/>
 </LinearLayout>
