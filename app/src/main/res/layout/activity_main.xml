@@ -31,4 +31,12 @@
         android:layout_height="wrap_content"
         android:text="Xfermode 混合模式/过渡模式"
         tools:ignore="OnClick"/>
+    <Button
+        android:id="@+id/Shader"
+        android:layout_width="match_parent"
+        android:onClick="Shader"
+        android:layout_height="wrap_content"
+        android:text="Shader"
+        tools:ignore="OnClick"/>
+
 </LinearLayout>

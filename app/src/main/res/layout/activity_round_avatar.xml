@@ -11,18 +11,18 @@
         android:layout_height="100dp"
         android:layout_margin="10dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/icon_photo"/>
+        android:src="@mipmap/icon_photo"/>
 
     <com.saner.view.round.XfermodeImage
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_margin="10dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/icon_photo"/>
+        android:src="@mipmap/icon_photo"/>
     <com.saner.view.round.PathImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_margin="10dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/icon_photo"/>
+        android:src="@mipmap/icon_photo"/>
 </LinearLayout>

@@ -94,7 +94,7 @@ public class EraserView extends View {
         mCanvas.drawColor(0xFF808080);
 
         // 获取背景底图Bitmap
-        bgBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.icon_photo);
+        bgBitmap = BitmapFactory.decodeResource(context.getResources(), R.mipmap.icon_photo);
 
         // 缩放背景底图Bitmap至屏幕大小
         bgBitmap = Bitmap.createScaledBitmap(bgBitmap, screenW, screenH, true);

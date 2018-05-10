@@ -7,6 +7,7 @@ import android.view.View;
 
 import com.saner.ui.photo.ShowPhotoActivity;
 import com.saner.ui.round.RoundAvatarActivity;
+import com.saner.ui.shader.ShaderActivity;
 import com.saner.ui.xfermode.XfermodeActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,19 +20,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onRoundAvatar(View view){
-//        LogUtil.logd("点击事件");
         start(RoundAvatarActivity.class);
     }
 
     public void onSelectedPhoto(View view){
-//        LogUtil.logd("点击事件");
         start(ShowPhotoActivity.class);
     }
     public void Xfermode(View view){
-//        LogUtil.logd("点击事件");
         start(XfermodeActivity.class);
     }
-
+    public void Shader(View view){
+        start(ShaderActivity.class);
+    }
 
     public void start(Class<?> cls){
         Intent intent=new Intent(this,cls);
