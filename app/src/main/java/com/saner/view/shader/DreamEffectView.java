@@ -23,6 +23,7 @@ import com.saner.util.MeasureUtil;
 
 /**
  * Created by sunset on 2018/5/10.
+ * 梦幻滤镜
  */
 
 public class DreamEffectView extends View {

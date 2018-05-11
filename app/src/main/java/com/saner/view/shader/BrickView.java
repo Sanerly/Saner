@@ -16,6 +16,7 @@ import com.saner.R;
 
 /**
  * Created by sunset on 2018/5/10.
+ *  BitmapShader
  */
 
 public class BrickView extends View {

@@ -21,6 +21,7 @@ import com.saner.util.MeasureUtil;
 
 /**
  * Created by sunset on 2018/5/10.
+ * 着色器练习
  */
 
 public class ShaderView extends View {

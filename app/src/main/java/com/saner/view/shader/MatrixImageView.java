@@ -16,6 +16,7 @@ import com.saner.util.MeasureUtil;
 
 /**
  * Created by sunset on 2018/5/11.
+ * 图片缩放和移动
  */
 
 public class MatrixImageView extends android.support.v7.widget.AppCompatImageView {
