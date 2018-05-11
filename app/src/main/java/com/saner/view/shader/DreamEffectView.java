@@ -91,8 +91,8 @@ public class DreamEffectView extends View {
 
         // 设置矩阵的缩放
         matrix.setScale(canvas.getWidth() / (radiu * 2F), 1.0F);
-
-        // 设置矩阵的预平移
+//
+//        // 设置矩阵的预平移
         matrix.preTranslate(((radiu * 2F) - canvas.getWidth()) / 2F, 0);
 
         // 将该矩阵注入径向渐变

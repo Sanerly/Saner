@@ -18,7 +18,15 @@
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="match_parent"/>-->
 
-        <com.saner.view.shader.DreamEffectView
+        <!--<com.saner.view.shader.DreamEffectView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"/>-->
+
+        <!--<com.saner.view.shader.MatrixView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"/>-->
+        <com.saner.view.shader.MatrixImageView
             android:layout_width="match_parent"
+            android:scaleType="matrix"
             android:layout_height="match_parent"/>
 </RelativeLayout>
