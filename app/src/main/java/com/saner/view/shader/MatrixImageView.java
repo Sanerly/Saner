@@ -6,10 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PointF;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.widget.ImageView;
 
 import com.saner.R;
 import com.saner.util.MeasureUtil;
@@ -73,62 +71,49 @@ public class MatrixImageView extends android.support.v7.widget.AppCompatImageVie
                 savedMatrix.set(currentMatrix);
                 start.set(event.getX(), event.getY());
                 mode = MODE_DRAG;
-                preEventCoor = null;
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:// 第二个点接触屏幕时
+                //获取两个手指间的距离
                 preMove = calSpacing(event);
-                if (preMove > 10F) {
+                if (preMove > 10f) {
                     savedMatrix.set(currentMatrix);
                     calMidPoint(mid, event);
                     mode = MODE_ZOOM;
                 }
-                preEventCoor = new float[4];
-                preEventCoor[0] = event.getX(0);
-                preEventCoor[1] = event.getX(1);
-                preEventCoor[2] = event.getY(0);
-                preEventCoor[3] = event.getY(1);
-                saveRotate = calRotation(event);
+
+                preEventCoor=new float[4];
+                preEventCoor[0]=event.getX(0);
+                preEventCoor[1]=event.getX(1);
+                preEventCoor[2]=event.getY(0);
+                preEventCoor[3]=event.getY(1);
+                saveRotate=calRotation(event);
                 break;
             case MotionEvent.ACTION_UP:// 单点离开屏幕时
             case MotionEvent.ACTION_POINTER_UP:// 第二个点离开屏幕时
                 mode = MODE_NONE;
-                preEventCoor = null;
                 break;
             case MotionEvent.ACTION_MOVE:// 触摸点移动时
-            /*
-             * 单点触控拖拽平移
-             */
                 if (mode == MODE_DRAG) {
                     currentMatrix.set(savedMatrix);
                     float dx = event.getX() - start.x;
                     float dy = event.getY() - start.y;
                     currentMatrix.postTranslate(dx, dy);
-                }
-            /*
-             * 两点触控拖放旋转
-             */
-                else if (mode == MODE_ZOOM && event.getPointerCount() == 2) {
-                    float currentMove = calSpacing(event);
+                } else if (mode == MODE_ZOOM && event.getPointerCount() == 2) {
                     currentMatrix.set(savedMatrix);
-                /*
-                 * 指尖移动距离大于10F缩放
-                 */
-                    if (currentMove > 10F) {
-                        float scale = currentMove / preMove;
-                        currentMatrix.postScale(scale, scale, mid.x, mid.y);
+                    float currentMove = calSpacing(event);
+                    if (currentMove>10f){
+                        float scale=currentMove/preMove;
+                        currentMatrix.postScale(scale,scale,mid.x,mid.y);
                     }
-                /*
-                 * 保持两点时旋转
-                 */
-                    if (preEventCoor != null) {
-                        rotate = calRotation(event);
-                        float r = rotate - saveRotate;
-                        currentMatrix.postRotate(r, getMeasuredWidth() / 2, getMeasuredHeight() / 2);
+
+                    if (preEventCoor!=null){
+                        rotate=calRotation(event);
+                        float r=rotate-saveRotate;
+                        currentMatrix.postRotate(r,getMeasuredWidth()/2,getMeasuredHeight()/2);
                     }
                 }
                 break;
         }
-
         setImageMatrix(currentMatrix);
         return true;
     }
@@ -144,6 +129,8 @@ public class MatrixImageView extends android.support.v7.widget.AppCompatImageVie
 
     /**
      * 计算两个触摸点的中点坐标
+     *
+     * 公式 ：x=(x1+x2)/2  y=(y1+y2)/2
      */
     private void calMidPoint(PointF point, MotionEvent event) {
         float x = event.getX(0) + event.getX(1);

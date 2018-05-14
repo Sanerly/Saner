@@ -39,4 +39,11 @@
         android:text="Shader"
         tools:ignore="OnClick"/>
 
+    <Button
+        android:id="@+id/Canvas"
+        android:layout_width="match_parent"
+        android:onClick="Canvas"
+        android:layout_height="wrap_content"
+        android:text="Canvas"
+        tools:ignore="OnClick"/>
 </LinearLayout>

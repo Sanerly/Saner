@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.saner.ui.canvas.CanvasActivity;
 import com.saner.ui.photo.ShowPhotoActivity;
 import com.saner.ui.round.RoundAvatarActivity;
 import com.saner.ui.shader.ShaderActivity;
@@ -32,6 +33,11 @@ public class MainActivity extends AppCompatActivity {
     public void Shader(View view){
         start(ShaderActivity.class);
     }
+
+    public void Canvas(View view){
+        start(CanvasActivity.class);
+    }
+
 
     public void start(Class<?> cls){
         Intent intent=new Intent(this,cls);

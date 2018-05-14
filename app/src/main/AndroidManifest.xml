@@ -31,6 +31,8 @@
         </activity>
         <activity android:name=".ui.shader.ShaderActivity">
         </activity>
+        <activity android:name=".ui.canvas.CanvasActivity">
+        </activity>
     </application>
 
 </manifest>
