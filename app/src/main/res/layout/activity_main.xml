@@ -36,7 +36,7 @@
         android:layout_width="match_parent"
         android:onClick="Shader"
         android:layout_height="wrap_content"
-        android:text="Shader"
+        android:text="Shader(画笔着色器)"
         tools:ignore="OnClick"/>
 
     <Button
@@ -44,6 +44,15 @@
         android:layout_width="match_parent"
         android:onClick="Canvas"
         android:layout_height="wrap_content"
-        android:text="Canvas"
+        android:text="Canvas(画布)"
+        tools:ignore="OnClick"/>
+
+
+    <Button
+        android:id="@+id/Measure"
+        android:layout_width="match_parent"
+        android:onClick="Measure"
+        android:layout_height="wrap_content"
+        android:text="Measure(测量)"
         tools:ignore="OnClick"/>
 </LinearLayout>

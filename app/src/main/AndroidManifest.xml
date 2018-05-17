@@ -33,6 +33,8 @@
         </activity>
         <activity android:name=".ui.canvas.CanvasActivity">
         </activity>
+        <activity android:name=".ui.measure.MeasureActivity">
+        </activity>
     </application>
 
 </manifest>
