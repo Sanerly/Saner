@@ -52,7 +52,7 @@ public class IconView extends View {
         mPaint.setTextAlign(Paint.Align.CENTER);
         mPaint.setTypeface(Typeface.DEFAULT_BOLD);
 
-        mStr = "余婷";
+        mStr = "六六六";
     }
 
     @Override
