@@ -7,4 +7,12 @@
     android:layout_height="match_parent"
     tools:context="com.saner.ui.canvas.CanvasActivity">
 
+    <com.saner.view.canvas.RangeSeekBar
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:lineColorEdge="@color/colorAccent"
+        app:lineColorSelected="@color/colorPrimary"
+        app:lineHeight="0.05"
+        app:seekBarResId_left="@mipmap/ic_launcher"
+        app:seekBarResId_right="@mipmap/ic_launcher"/>
 </RelativeLayout>
