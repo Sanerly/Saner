@@ -111,11 +111,10 @@ public class TabLabelLayout extends ViewGroup {
                     LogUtil.logd("layoutHeight 1=" + layoutHeight);
                     layoutHeight = Math.max(childHeight, layoutHeight);
                     LogUtil.logd("layoutHeight 2=" + layoutHeight);
-                    if (layoutWidth + childWidth > getWidth()) {
+                    if (layoutWidth + childWidth+params.leftMargin+params.rightMargin > getWidth()) {
                         layoutWidth = 0;
-                        layoutHeight += childHeight;
+                        layoutHeight += childHeight+params.topMargin+params.bottomMargin;
                     }
-
 
                     int left = getPaddingLeft() + params.leftMargin + layoutWidth;
                     int top = getPaddingTop() + params.topMargin + layoutHeight;
@@ -124,7 +123,7 @@ public class TabLabelLayout extends ViewGroup {
 
                     childView.layout(left, top, right, bottom);
 
-                    layoutWidth += childWidth;
+                    layoutWidth += childWidth+params.leftMargin+params.rightMargin;
                 }
 
 
