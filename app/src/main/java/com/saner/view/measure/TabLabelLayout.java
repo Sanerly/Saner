@@ -51,11 +51,11 @@ public class TabLabelLayout extends ViewGroup {
                 if (childView.getVisibility() != GONE) {
                     measureChildWithMargins(childView, widthMeasureSpec, 0, heightMeasureSpec, 0);
 
-                    int childMeasureSize = Math.max(childView.getMeasuredWidth(), childView.getMeasuredHeight());
-
-                    int childMeasureSpec = MeasureSpec.makeMeasureSpec(childMeasureSize, MeasureSpec.EXACTLY);
-
-                    childView.measure(childMeasureSpec, childMeasureSpec);
+//                    int childMeasureSize = Math.max(childView.getMeasuredWidth(), childView.getMeasuredHeight());
+//
+//                    int childMeasureSpec = MeasureSpec.makeMeasureSpec(childMeasureSize, MeasureSpec.EXACTLY);
+//
+//                    childView.measure(childMeasureSpec, childMeasureSpec);
 
                     MarginLayoutParams params = (MarginLayoutParams) childView.getLayoutParams();
 
@@ -93,11 +93,15 @@ public class TabLabelLayout extends ViewGroup {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
 
-        int layoutWidth = 0;
+//        int layoutWidth = 0;
         int layoutHeight = 0;
 
+        int top=getPaddingTop();
+        int left=getPaddingLeft();
+
+
         if (getChildCount() > 0) {
-            int mutil = 0;
+
             for (int i = 0; i < getChildCount(); i++) {
                 View childView = getChildAt(i);
 
@@ -105,25 +109,23 @@ public class TabLabelLayout extends ViewGroup {
 
                     MarginLayoutParams params = (MarginLayoutParams) childView.getLayoutParams();
 
-                    int childWidth = childView.getMeasuredWidth();
+                    int childWidth = childView.getMeasuredWidth() ;
                     int childHeight = childView.getMeasuredHeight();
-                    LogUtil.logd("childHeight =" + childHeight);
-                    LogUtil.logd("layoutHeight 1=" + layoutHeight);
+
+
                     layoutHeight = Math.max(childHeight, layoutHeight);
-                    LogUtil.logd("layoutHeight 2=" + layoutHeight);
-                    if (layoutWidth + childWidth+params.leftMargin+params.rightMargin > getWidth()) {
-                        layoutWidth = 0;
-                        layoutHeight += childHeight+params.topMargin+params.bottomMargin;
+
+                    if (left + childWidth+params.leftMargin+params.rightMargin> getWidth()) {
+                        left=getPaddingLeft();
+
+                        top += layoutHeight+params.bottomMargin;
+                        layoutHeight = childHeight;
                     }
 
-                    int left = getPaddingLeft() + params.leftMargin + layoutWidth;
-                    int top = getPaddingTop() + params.topMargin + layoutHeight;
-                    int right = getPaddingRight() + getPaddingLeft() + params.leftMargin + params.rightMargin + layoutWidth + childWidth;
-                    int bottom = getPaddingBottom() + getPaddingTop() + params.bottomMargin + params.topMargin + layoutHeight + childHeight;
+                    childView.layout(left+params.leftMargin, top+params.topMargin,
+                            left+childWidth+params.rightMargin, top+layoutHeight+params.bottomMargin);
 
-                    childView.layout(left, top, right, bottom);
-
-                    layoutWidth += childWidth+params.leftMargin+params.rightMargin;
+                    left += childWidth+params.rightMargin;
                 }
 
 
