@@ -6,6 +6,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.saner.util.LogUtil;
+
 /**
  * Created by sunset on 2018/5/23.
  */
@@ -265,7 +267,7 @@ public class SquareLayout extends ViewGroup {
 
                     int childActualSize = childView.getMeasuredWidth();
 
-
+                    LogUtil.logd("leftMargin = "+ params.leftMargin);
                     if (mOrientation == ORIENTATION_HORIZONTAL) {
                           /*
                          * 如果子元素数量比限定值大
