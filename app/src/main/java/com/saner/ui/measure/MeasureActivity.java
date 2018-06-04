@@ -19,7 +19,7 @@ public class MeasureActivity extends Activity {
         TabLabelLayout tablabellayout = findViewById(R.id.tablabellayout);
 
         List<String> mList = new ArrayList<>();
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < 5; i++) {
             mList.add("Group");
             mList.add("的大小并");
             mList.add("留下了大量的空白区域");

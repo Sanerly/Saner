@@ -122,6 +122,7 @@ public class DreamEffectView extends View {
         canvas.drawBitmap(bitmap,x,y,mPaint);
 
         mPaint.setXfermode(null);
+
         canvas.restoreToCount(sc);
 
 //        canvas.drawRect(mRectF,mShaderPaint);

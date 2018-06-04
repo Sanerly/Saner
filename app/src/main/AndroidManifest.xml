@@ -35,6 +35,8 @@
         </activity>
         <activity android:name=".ui.measure.MeasureActivity">
         </activity>
+        <activity android:name=".ui.touch.TouchActivity">
+        </activity>
     </application>
 
 </manifest>

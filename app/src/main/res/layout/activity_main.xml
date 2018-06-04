@@ -55,4 +55,12 @@
         android:layout_height="wrap_content"
         android:text="Measure(测量)"
         tools:ignore="OnClick"/>
+
+    <Button
+        android:id="@+id/Touch"
+        android:layout_width="match_parent"
+        android:onClick="Touch"
+        android:layout_height="wrap_content"
+        android:text="Touch(事件的分发机制)"
+        tools:ignore="Touch"/>
 </LinearLayout>

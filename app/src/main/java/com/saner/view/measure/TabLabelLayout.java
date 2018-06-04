@@ -10,6 +10,8 @@ import android.widget.BaseAdapter;
 import android.widget.Scroller;
 import android.widget.Toast;
 
+import com.saner.util.LogUtil;
+
 /**
  * Created by sunset on 2018/5/25.
  */
@@ -34,7 +36,7 @@ public class TabLabelLayout extends ViewGroup {
     DataChangeObserver mObserver;
 
     //向上和乡下的偏移量
-    private int mOffset =500;
+    private int mOffset = 500;
 
     public TabLabelLayout(Context context) {
         this(context, null);
@@ -51,14 +53,14 @@ public class TabLabelLayout extends ViewGroup {
 
 
     private void init(Context context) {
-        mScroller=new Scroller(context);
+        mScroller = new Scroller(context);
     }
 
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         //测量布局的宽度
-        mWidth=resolveSize(0,widthMeasureSpec);
+        mWidth = resolveSize(0, widthMeasureSpec);
         /* 声明临时变量存储父容器的期望值 该值应该等于父容器的内边距加上所有子元素的测量宽高和外边距*/
         int parentDesireWidth = 0;
         int parentDesireHeight = 0;
@@ -89,7 +91,7 @@ public class TabLabelLayout extends ViewGroup {
 
                     parentDesireHeight = Math.max(parentDesireHeight, childHeight);
 
-                    if (parentDesireWidth+childWidth >= mWidth) {
+                    if (parentDesireWidth + childWidth >= mWidth) {
                         parentDesireWidth = 0;
                         parentDesireHeight += childHeight;
                     }
@@ -113,7 +115,7 @@ public class TabLabelLayout extends ViewGroup {
 
         }
 //        LogUtil.logd("   parentDesireHeight = "+parentDesireHeight);
-        mContentHeight =parentDesireHeight;
+        mContentHeight = parentDesireHeight;
         setMeasuredDimension(resolveSizeAndState(parentDesireWidth, widthMeasureSpec, childMeasureState),
                 resolveSizeAndState(parentDesireHeight, heightMeasureSpec, childMeasureState << MEASURED_HEIGHT_STATE_SHIFT));
 
@@ -132,17 +134,17 @@ public class TabLabelLayout extends ViewGroup {
 
                 if (childView.getVisibility() != GONE) {
                     int childWidth = childView.getMeasuredWidth();
-                    int childHeight = childView.getMeasuredHeight() ;
+                    int childHeight = childView.getMeasuredHeight();
                     MarginLayoutParams params = (MarginLayoutParams) childView.getLayoutParams();
-                    lineHeight=Math.max(childHeight,lineHeight);
-                    if (left+childWidth>mWidth){
-                        left=getPaddingLeft();
-                        top+=childHeight+params.topMargin;
-                        lineHeight=0;
+                    lineHeight = Math.max(childHeight, lineHeight);
+                    if (left + childWidth > mWidth) {
+                        left = getPaddingLeft();
+                        top += childHeight + params.topMargin;
+                        lineHeight = 0;
 //                        LogUtil.logd((i/4) +" = i  parentDesireHeight = "+top);
                     }
-                    childView.layout(left+params.leftMargin,top+params.topMargin,left+childWidth,top+childHeight);
-                    left+=childWidth+params.leftMargin;
+                    childView.layout(left + params.leftMargin, top + params.topMargin, left + childWidth, top + childHeight);
+                    left += childWidth + params.leftMargin;
                 }
 
             }
@@ -151,49 +153,96 @@ public class TabLabelLayout extends ViewGroup {
         }
     }
 
+    private int mLastX = 0;
+    private float mLastY = 0;
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        mHeight=h;
+        mHeight = h;
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+
+        boolean result=false;
+
+        //如果父View不消费事件，就把事件传递给子View
+        if (!onInterceptTouchEvent(ev)){
+            View child=getChildAt(0);
+            result=child.dispatchTouchEvent(ev);
+        }
+
+        //如果父View要消费事件，或者子View不消费事件，则将事件传递给父View，
+        if (!result){
+            //父View是否消费了事件
+            result=onTouchEvent(ev);
+        }
+
+
+        return result;
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+//        switch (ev.getAction()) {
+//            case MotionEvent.ACTION_DOWN:
+//                mLastY = ev.getY();
+//                break;
+//            case MotionEvent.ACTION_MOVE:
+//                // 当手指拖动值大于TouchSlop值时，认为应该进行滚动，拦截子控件的事件
+//
+//                float curY = ev.getY();
+//                float dy = mLastY - curY;
+//                LogUtil.logd("dy   = " + dy);
+//
+//                if (Math.abs(dy) >= 0) {
+//                    return true;
+//                }
+////                mLastY=dy;
+//                break;
+//        }
+//        if (getScrollY()>0){
+//            return true;
+//        }
+        return true;
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (mContentHeight<=mHeight){
+                if (mContentHeight <= mHeight) {
                     return false;
                 }
                 lastDownY = event.getY();
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (mContentHeight<=mHeight){
+                if (mContentHeight <= mHeight) {
                     return false;
                 }
-                if (!mScroller.isFinished()){
+                if (!mScroller.isFinished()) {
                     mScroller.abortAnimation();
                 }
-                float currentY=event.getY();
-                float dy=lastDownY-currentY;
-                if (getScrollY()<-mOffset){
-                    dy=0;
-                }else if (getScrollY()> mContentHeight -mHeight+ mOffset){
-                    dy=0;
+                float currentY = event.getY();
+                float dy = lastDownY - currentY;
+                if (getScrollY() < -mOffset) {
+                    dy = 0;
+                } else if (getScrollY() > mContentHeight - mHeight + mOffset) {
+                    dy = 0;
                 }
                 scrollBy(0, (int) dy);
-                lastDownY=event.getY();
+                lastDownY = event.getY();
                 break;
             case MotionEvent.ACTION_UP:
-                if (mContentHeight<=mHeight){
+                if (mContentHeight <= mHeight) {
                     return false;
                 }
 //                LogUtil.logd("mContentHeight-mHeight-getScrollY()   = " + (mContentHeight-mHeight-getScrollY()));
-                if (getScrollY()<0){
+                if (getScrollY() < 0) {
                     mScroller.startScroll(0, getScrollY(), 0, -getScrollY());
-                }else if (getScrollY()> mContentHeight -mHeight){
-                    mScroller.startScroll(0, getScrollY(), 0, mContentHeight -mHeight-getScrollY());
+                } else if (getScrollY() > mContentHeight - mHeight) {
+                    mScroller.startScroll(0, getScrollY(), 0, mContentHeight - mHeight - getScrollY());
                 }
 
                 break;
@@ -229,7 +278,7 @@ public class TabLabelLayout extends ViewGroup {
     }
 
 
-     class DataChangeObserver extends DataSetObserver {
+    class DataChangeObserver extends DataSetObserver {
         @Override
         public void onInvalidated() {
             super.onInvalidated();
@@ -242,11 +291,10 @@ public class TabLabelLayout extends ViewGroup {
     }
 
 
-
     public void setAdapter(BaseAdapter adapter) {
-        if (mAdapter == null){
+        if (mAdapter == null) {
             mAdapter = adapter;
-            if (mObserver == null){
+            if (mObserver == null) {
                 mObserver = new DataChangeObserver();
                 mAdapter.registerDataSetObserver(mObserver);
             }
@@ -262,17 +310,16 @@ public class TabLabelLayout extends ViewGroup {
         this.removeAllViews();
 
         for (int i = 0; i < mAdapter.getCount(); i++) {
-            final View view=mAdapter.getView(i, null, null);
+            final View view = mAdapter.getView(i, null, null);
 //            LogUtil.logd("Add View index = "+i);
-//            view.setTag(i);
-//            final int position = i;
-//            view.setOnClickListener(new OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//
-//                    Toast.makeText(view.getContext(), "点击的View索引："+position, Toast.LENGTH_SHORT).show();
-//                }
-//            });
+            final int position = i;
+            view.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    Toast.makeText(view.getContext(), "点击的View索引：" + position, Toast.LENGTH_SHORT).show();
+                }
+            });
             this.addView(view);
 
 
