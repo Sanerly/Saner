@@ -27,21 +27,21 @@ public class TouchViewGroup extends FrameLayout{
         super(context, attrs, defStyleAttr);
     }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        LogUtil.logd("TouchViewGroup     dispatchTouchEvent = "+super.dispatchTouchEvent(ev));
-        return false;
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        LogUtil.logd("TouchViewGroup     onInterceptTouchEvent");
-        return false;
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        LogUtil.logd("TouchViewGroup     onTouchEvent");
-        return true;
-    }
+//    @Override
+//    public boolean dispatchTouchEvent(MotionEvent ev) {
+////        LogUtil.logd("TouchViewGroup     dispatchTouchEvent = "+super.dispatchTouchEvent(ev));
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean onInterceptTouchEvent(MotionEvent ev) {
+////        LogUtil.logd("TouchViewGroup     onInterceptTouchEvent");
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+////        LogUtil.logd("TouchViewGroup     onTouchEvent");
+//        return false;
+//    }
 }
