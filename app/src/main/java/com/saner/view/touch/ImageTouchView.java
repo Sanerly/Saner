@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.saner.R;
+import com.saner.util.LogUtil;
 
 /**
  * Created by sunset on 2018/6/4.
@@ -40,9 +41,17 @@ public class ImageTouchView extends View {
 
     private void init(Context context) {
         bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.icon_photo);
-
+        LogUtil.loge("Width = "+bitmap.getWidth());
+        LogUtil.loge("Height = "+bitmap.getHeight());
         rectF = new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight());
         matrix = new Matrix();
+
+//        setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                LogUtil.loge("OnClickListener = "+v.getId());
+//            }
+//        });
     }
 
     boolean isCanMove = false;
@@ -66,7 +75,8 @@ public class ImageTouchView extends View {
 
                     matrix.postTranslate(event.getX(index) - lastPoint.x, event.getY(index) - lastPoint.y);
                     lastPoint.set(event.getX(index), event.getY(index));
-
+                    LogUtil.loge("Width = "+bitmap.getWidth());
+                    LogUtil.loge("Height = "+bitmap.getHeight());
                     rectF = new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight());
                     matrix.mapRect(rectF);
 

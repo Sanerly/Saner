@@ -134,14 +134,14 @@ public class SelectedActivity extends AppCompatActivity implements SelectedAdapt
         handler.sendMessage(new Message());
     }
 
-    @SuppressLint("HandlerLeak")
-    Handler handler = new Handler() {
+
+    Handler handler = new Handler(new Handler.Callback() {
         @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
+        public boolean handleMessage(Message msg) {
             mAdapter.notifyDataSetChanged();
+            return false;
         }
-    };
+    });
 
 
     @Override
@@ -171,7 +171,7 @@ public class SelectedActivity extends AppCompatActivity implements SelectedAdapt
         if (count < 1) {
             str = "完成";
         } else {
-            str = "("+count+")完成";
+            str = "(" + count + ")完成";
         }
         mButComplete.setText(str);
     }
@@ -183,7 +183,7 @@ public class SelectedActivity extends AppCompatActivity implements SelectedAdapt
 
     @Override
     public void onShowPhoto(PhotoModel data, int pos) {
-        ClipImageActivity.start(this,data.getUrl());
+        ClipImageActivity.start(this, data.getUrl());
     }
 
     @Override

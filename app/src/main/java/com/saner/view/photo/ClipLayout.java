@@ -64,6 +64,7 @@ public class ClipLayout extends FrameLayout implements ClipBorderView.onBorderLi
         addView(mClipBorder);
         addBottomLayout();
         setClipSize(SPEC_SIZE);
+//        LogUtil.loge("mClipBorder = "+mClipBorder.getSideLength()[0]);
     }
 
     private void addBottomLayout() {
@@ -118,6 +119,7 @@ public class ClipLayout extends FrameLayout implements ClipBorderView.onBorderLi
      */
     public void setImageUrl(String url) {
         if (mClipImage != null && listener != null) {
+            mClipImage.setImageUrl(url);
             listener.Imageloader(mClipImage, url);
         }
     }

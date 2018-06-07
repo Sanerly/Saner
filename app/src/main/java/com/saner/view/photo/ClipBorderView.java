@@ -40,6 +40,7 @@ public class ClipBorderView extends View {
 
     private int spec;
     private Paint mPaint;
+    private RectF mRectF;
 
     private void init(Context context) {
         this.mContext = context;
@@ -48,22 +49,30 @@ public class ClipBorderView extends View {
         mPaint.setColor(Color.TRANSPARENT);
         mPaint.setStyle(Paint.Style.FILL);
 //       setSpec(ClipLayout.SPEC_SIZE);
+
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+
     }
 
     @SuppressLint("DrawAllocation")
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        Path path = null;
         int centerX = getWidth() / 2;
         int centerY = getHeight() / 2;
-        Path path = null;
-        RectF rectF = new RectF(centerX - spec, centerY - spec, centerX + spec, centerY + spec);
+        mRectF = new RectF(centerX - spec, centerY - spec, centerX + spec, centerY + spec);
         if (onBorderListener != null) {
-            path = onBorderListener.getPath(rectF);
+            path = onBorderListener.getPath(mRectF);
         }
         if (path == null || onBorderListener == null) {
             path = new Path();
-            path.addOval(rectF, Path.Direction.CW);
+            path.addOval(mRectF, Path.Direction.CW);
         }
         canvas.save();
         canvas.clipPath(path, Region.Op.DIFFERENCE);
@@ -88,8 +97,19 @@ public class ClipBorderView extends View {
         DisplayMetrics dm = mContext.getApplicationContext().getResources().getDisplayMetrics();
         int screenWidth = dm.widthPixels;
         spec = (int) (screenWidth / 2 * rate);
+        invalidate();
     }
 
+    public float[] getSideLength() {
+        float side[] = new float[2];
+
+        side[0] = mRectF.right - mRectF.left;
+
+        side[1] = mRectF.bottom - mRectF.top;
+
+        return side;
+
+    }
 
     public void setBorderListener(onBorderListener listener) {
         this.onBorderListener = listener;
