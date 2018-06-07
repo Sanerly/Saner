@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
@@ -28,9 +29,7 @@ import com.saner.util.SelPhotoUtil;
 public class ClipImageView extends android.support.v7.widget.AppCompatImageView {
     private Context mContext;
 
-    private float mLastX;
-    private float mLastY;
-    private int mActivePointerId;
+//    private int mActivePointerId;
 
     private RectF mBorderRect;
     //测试时使用的大小
@@ -56,7 +55,10 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
     private void init(Context context) {
         this.mContext = context;
         setScaleType(ScaleType.MATRIX);
-
+        mStartPointF = new PointF();
+        mMidPointF = new PointF();
+        mSaveMatrix = new Matrix();
+        mCurrentMatrix = new Matrix();
     }
 
     @Override
@@ -69,40 +71,69 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
         setPostCenter(centerX, centerY);
     }
 
+    private PointF mStartPointF, mMidPointF;
+    private Matrix mSaveMatrix;
+    private Matrix mCurrentMatrix;
+    //平移
+    private int TRANSLATE_DRAG_FLAG = 0;
+    private int NONE_FLAG = 1;
+    private int SCALE_FLAG = 1;
+    private int mFlag;
+    //两个触摸点的距离
+    private float calSpac;
 
-//
-//    @SuppressLint("ClickableViewAccessibility")
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//        switch (event.getAction()) {
-//            case MotionEvent.ACTION_DOWN:
-//                mActivePointerId = event.getPointerId(0);
-//                mLastX = event.getX();
-//                mLastY = event.getY();
-//                break;
-//            case MotionEvent.ACTION_MOVE:
-//                int activePointerIndex = event.findPointerIndex(mActivePointerId);
-//                if (activePointerIndex == -1) {
-//                    return true;
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+                mSaveMatrix.set(mCurrentMatrix);
+                mStartPointF.set(event.getX(), event.getY());
+                mFlag = TRANSLATE_DRAG_FLAG;
+
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+//                calSpac = calSpacing(event);
+//                if (calSpac > 10f) {
+//                    mSaveMatrix.set(mCurrentMatrix);
+//                    calMidPoint(mMidPointF, event);
+//                    mFlag = SCALE_FLAG;
 //                }
-//                float mx = event.getX(activePointerIndex);
-//                float my = event.getY(activePointerIndex);
-//                drag(mx, my);
-//                mLastX = mx;
-//                mLastY = my;
-//                break;
-//        }
-//        return true;
-//    }
+                break;
+            case MotionEvent.ACTION_MOVE:
 
-    //motionX,motionY为当前触摸的坐标
-    public void drag(float motionX, float motionY) {
-        //mLastY,mLastX 为上一次触摸的坐标
-        float moveX = motionX - mLastX;
-        float moveY = motionY - mLastY;
+                if (mFlag == TRANSLATE_DRAG_FLAG) {
+                    mCurrentMatrix.set(mSaveMatrix);
+                    float dx = event.getX() - mStartPointF.x;
+                    float dy = event.getY() - mStartPointF.y;
+                    onTranslateDrag(dx, dy);
+                } else if (mFlag == SCALE_FLAG && event.getPointerCount() == 2) {
+//                    mCurrentMatrix.set(mSaveMatrix);
+//                    float currentMove = calSpacing(event);
+//                    if (currentMove > 10f) {
+//                        float scale = currentMove / calSpac;
+//                        mCurrentMatrix.postScale(scale,scale,mMidPointF.x,mMidPointF.y);
+//                    }
+                }
+                break;
+            case MotionEvent.ACTION_UP:// 单点离开屏幕时
+            case MotionEvent.ACTION_POINTER_UP:// 第二个点离开屏幕时
+                mFlag = NONE_FLAG;
+                break;
+        }
+        setImageMatrix(mCurrentMatrix);
+        return true;
+    }
+
+    /**
+     * 拖动图片的边界限制
+     *
+     * @param moveX
+     * @param moveY
+     */
+    public void onTranslateDrag(float moveX, float moveY) {
 
         RectF rectF = getCurrentRectF();
-        //边界限制
         if (mBorderRect != null && rectF != null) {
 
             if (moveX > 0) {
@@ -124,14 +155,30 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
                 }
             }
         }
-        //通过postTranslate方法就可以移动到相应的位置
-        getImageMatrix().postTranslate(moveX, moveY);
-//        LogUtil.logd("moveX = "+moveX+" moveY = "+moveY);
-        //重画视图
-        invalidate();
 
+        mCurrentMatrix.postTranslate(moveX, moveY);
     }
 
+
+    /**
+     * 计算两个触摸点间的距离
+     */
+    private float calSpacing(MotionEvent event) {
+        float x = event.getX(0) - event.getX(1);
+        float y = event.getY(0) - event.getY(1);
+        return (float) Math.sqrt(x * x + y * y);
+    }
+
+    /**
+     * 计算两个触摸点的中点坐标
+     * <p>
+     * 公式 ：x=(x1+x2)/2  y=(y1+y2)/2
+     */
+    private void calMidPoint(PointF point, MotionEvent event) {
+        float x = event.getX(0) + event.getX(1);
+        float y = event.getY(0) + event.getY(1);
+        point.set(x / 2, y / 2);
+    }
 
     /**
      * 获取图片自己的边界
@@ -144,13 +191,14 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
         int w = getDrawable().getIntrinsicWidth();
         int h = getDrawable().getIntrinsicHeight();
         RectF rectF = new RectF(0, 0, w, h);
-        getImageMatrix().mapRect(rectF);
+        mCurrentMatrix.mapRect(rectF);
         return rectF;
     }
 
 
     /**
      * 在屏幕中心显示,
+     *
      * @param centerX
      * @param centerY
      */
@@ -162,10 +210,10 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
         int height = mBitmap.getHeight();
         float frame = getBorderRect().right - getBorderRect().left;
         float scale = frame / width;
-        Matrix matrix = new Matrix();
-        matrix.postScale(scale, scale);
-        matrix.postTranslate(Math.round(centerX - (width * scale * 0.5f)), Math.round(centerY - (height * scale * 0.5f)));
-        setImageMatrix(matrix);
+//        Matrix matrix = new Matrix();
+        mCurrentMatrix.postScale(scale, scale);
+        mCurrentMatrix.postTranslate(Math.round(centerX - (width * scale * 0.5f)), Math.round(centerY - (height * scale * 0.5f)));
+        setImageMatrix(mCurrentMatrix);
         mScale = scale;
     }
 
