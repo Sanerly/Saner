@@ -11,13 +11,11 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.FloatRange;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
-import android.widget.ImageView;
 
 import com.saner.util.LogUtil;
 import com.saner.util.SelPhotoUtil;
@@ -76,11 +74,15 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
     private Matrix mCurrentMatrix;
     //平移
     private int TRANSLATE_DRAG_FLAG = 0;
+    //默认
     private int NONE_FLAG = 1;
+    //缩放
     private int SCALE_FLAG = 1;
     private int mFlag;
     //两个触摸点的距离
-    private float calSpac;
+    private float calSpace;
+    //手指缩放时用来检查对比的缩放比例
+    private float checkScale;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -90,15 +92,15 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
                 mSaveMatrix.set(mCurrentMatrix);
                 mStartPointF.set(event.getX(), event.getY());
                 mFlag = TRANSLATE_DRAG_FLAG;
-
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
-//                calSpac = calSpacing(event);
-//                if (calSpac > 10f) {
-//                    mSaveMatrix.set(mCurrentMatrix);
-//                    calMidPoint(mMidPointF, event);
-//                    mFlag = SCALE_FLAG;
-//                }
+                calSpace = calSpacing(event);
+                boolean isArea = mBorderRect.contains(event.getX(), event.getY());
+                if (calSpace > 10f && isArea) {
+                    mSaveMatrix.set(mCurrentMatrix);
+                    calMidPoint(mMidPointF, event);
+                    mFlag = SCALE_FLAG;
+                }
                 break;
             case MotionEvent.ACTION_MOVE:
 
@@ -106,14 +108,19 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
                     mCurrentMatrix.set(mSaveMatrix);
                     float dx = event.getX() - mStartPointF.x;
                     float dy = event.getY() - mStartPointF.y;
-                    onTranslateDrag(dx, dy);
+                    onCheckDrag(dx, dy);
                 } else if (mFlag == SCALE_FLAG && event.getPointerCount() == 2) {
-//                    mCurrentMatrix.set(mSaveMatrix);
-//                    float currentMove = calSpacing(event);
-//                    if (currentMove > 10f) {
-//                        float scale = currentMove / calSpac;
-//                        mCurrentMatrix.postScale(scale,scale,mMidPointF.x,mMidPointF.y);
-//                    }
+                    mCurrentMatrix.set(mSaveMatrix);
+                    float currentMove = calSpacing(event);
+                    if (currentMove > 10f) {
+                        float scale = currentMove / calSpace;
+                        float[] values = new float[9];
+                        mCurrentMatrix.getValues(values);
+                        scale = checkFitScale(scale, values);
+                        mScale = scale;
+                        mCurrentMatrix.postScale(scale, scale, mMidPointF.x, mMidPointF.y);
+
+                    }
                 }
                 break;
             case MotionEvent.ACTION_UP:// 单点离开屏幕时
@@ -121,17 +128,27 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
                 mFlag = NONE_FLAG;
                 break;
         }
+
         setImageMatrix(mCurrentMatrix);
         return true;
     }
 
+
+    private float checkFitScale(float scale, float[] values) {
+        if (scale * values[Matrix.MSCALE_X] > checkScale * 2)
+            scale = checkScale * 2 / values[Matrix.MSCALE_X];
+        if (scale * values[Matrix.MSCALE_X] < checkScale)
+            scale = checkScale / values[Matrix.MSCALE_X];
+        return scale;
+    }
+
     /**
-     * 拖动图片的边界限制
+     * 拖动图片的边界检查
      *
      * @param moveX
      * @param moveY
      */
-    public void onTranslateDrag(float moveX, float moveY) {
+    public void onCheckDrag(float moveX, float moveY) {
 
         RectF rectF = getCurrentRectF();
         if (mBorderRect != null && rectF != null) {
@@ -209,12 +226,17 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
         int width = mBitmap.getWidth();
         int height = mBitmap.getHeight();
         float frame = getBorderRect().right - getBorderRect().left;
-        float scale = frame / width;
-//        Matrix matrix = new Matrix();
+        float scale;
+        if (height < frame) {
+            scale = frame / height;
+        } else {
+            scale = frame / width;
+        }
         mCurrentMatrix.postScale(scale, scale);
         mCurrentMatrix.postTranslate(Math.round(centerX - (width * scale * 0.5f)), Math.round(centerY - (height * scale * 0.5f)));
         setImageMatrix(mCurrentMatrix);
         mScale = scale;
+        checkScale = scale;
     }
 
     /***
@@ -253,15 +275,15 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
             return null;
         }
 
-        Bitmap bitmap = SelPhotoUtil.drawable2Bitmap(getDrawable());
+//        Bitmap bitmap = SelPhotoUtil.drawable2Bitmap(getDrawable());
         //以下所有步骤的思路，均是将点或者大小还原到加载图片大小比例后，再进行处理。
         //获取裁剪区域的实际长宽==裁剪框的大小
-        int clipWidth = (int) (getClipWidth() / mScale);
-        int clipHeight = (int) (getClipHeight() / mScale);
+        int clipWidth = (int) (getClipWidth()*mScale );
+        int clipHeight = (int) (getClipHeight() *mScale);
 
         //重新计算得出最终裁剪起始点
-        int clipLeft = (int) (bitmap.getWidth() / 2 - clipWidth / 2 - getActuallyScrollX() / mScale);
-        int clipTop = (int) (bitmap.getHeight() / 2 - clipHeight / 2 - getActuallyScrollY() / mScale);
+        int clipLeft = (int) (mBitmap.getWidth() / 2 - clipWidth / 2 - getActuallyScrollX() / mScale);
+        int clipTop = (int) (mBitmap.getHeight() / 2 - clipHeight / 2 - getActuallyScrollY() / mScale  );
 
         //其中width与height是最终实际裁剪的图片大小,saveBitmap就是最终裁剪的图片
         Bitmap saveBitmap = Bitmap.createBitmap(clipWidth, clipHeight, Bitmap.Config.ARGB_8888);
@@ -274,17 +296,17 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
         int cropRight = clipLeft + clipWidth;
         int cropBottom = clipTop + clipHeight;
         //裁剪超出图片边界超出边界
-        if (cropRight > bitmap.getWidth()) {
-            cropRight = bitmap.getWidth();
-            showRight = bitmap.getWidth() - clipLeft;
-        }
-        if (cropBottom > bitmap.getHeight()) {
-            cropBottom = bitmap.getHeight();
-            showBottom = bitmap.getHeight() - clipTop;
-        }
-        Rect cropRect = new Rect(clipLeft, clipTop, cropRight, cropBottom);
+//        if (cropRight > mBitmap.getWidth()) {
+//            cropRight = mBitmap.getWidth();
+//            showRight = mBitmap.getWidth() - clipLeft;
+//        }
+//        if (cropBottom > mBitmap.getHeight()) {
+//            cropBottom = mBitmap.getHeight();
+//            showBottom = mBitmap.getHeight() - clipTop;
+//        }
+        Rect cropRect = new Rect(Math.abs(clipLeft), Math.abs(clipTop), cropRight, cropBottom);
         Rect showRect = new Rect(0, 0, showRight, showBottom);
-        canvas.drawBitmap(bitmap, cropRect, showRect, new Paint());
+        canvas.drawBitmap(mBitmap, cropRect, showRect, new Paint());
         return saveBitmap;
     }
 
