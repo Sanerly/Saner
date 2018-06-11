@@ -18,7 +18,6 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 
 import com.saner.util.LogUtil;
-import com.saner.util.SelPhotoUtil;
 
 /**
  * Created by sunset on 2018/4/11.
@@ -128,7 +127,25 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
                 mFlag = NONE_FLAG;
                 break;
         }
-
+        float[] values = new float[9];
+        mCurrentMatrix.getValues(values);
+        float scale = values[Matrix.MSCALE_X];
+        int clipWidth = (int) (getClipWidth());
+        int clipHeight = (int) (getClipHeight());
+        RectF imageRectF = getCurrentRectF();
+        float curWidth = imageRectF.width();
+        float curHeight = imageRectF.height();
+        //重新计算得出最终裁剪起始点
+        int clipLeft = (int) ((int) ((int) (curWidth / 2 - clipWidth / 2 - getActuallyScrollX())) / scale);
+        int clipTop = (int) ((int) ((int) (curHeight / 2 - clipHeight / 2 - getActuallyScrollY())) / scale);
+        int cropRight = (int) (clipLeft + clipWidth / scale);
+        int cropBottom = (int) (clipTop + clipHeight / scale);
+        LogUtil.logd("curWidth = " + curWidth);
+        LogUtil.logd("curHeight = " + curHeight);
+        LogUtil.logd("clipLeft = " + clipLeft);
+        LogUtil.logd("clipTop = " + clipTop);
+        LogUtil.logd("cropRight = " + cropRight);
+        LogUtil.logd("cropBottom = " + cropBottom);
         setImageMatrix(mCurrentMatrix);
         return true;
     }
@@ -207,6 +224,7 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
         }
         int w = getDrawable().getIntrinsicWidth();
         int h = getDrawable().getIntrinsicHeight();
+
         RectF rectF = new RectF(0, 0, w, h);
         mCurrentMatrix.mapRect(rectF);
         return rectF;
@@ -223,8 +241,10 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
         if (mBitmap == null) {
             return;
         }
+
         int width = mBitmap.getWidth();
         int height = mBitmap.getHeight();
+
         float frame = getBorderRect().right - getBorderRect().left;
         float scale;
         if (height < frame) {
@@ -270,20 +290,26 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
      * 裁剪图片
      */
     public Bitmap clip() {
-        if (getDrawable() == null) {
-            LogUtil.loge("image resource is null");
+        if (mBitmap == null) {
+            LogUtil.loge("bitmap resource is null");
             return null;
         }
 
-//        Bitmap bitmap = SelPhotoUtil.drawable2Bitmap(getDrawable());
-        //以下所有步骤的思路，均是将点或者大小还原到加载图片大小比例后，再进行处理。
-        //获取裁剪区域的实际长宽==裁剪框的大小
-        int clipWidth = (int) (getClipWidth()*mScale );
-        int clipHeight = (int) (getClipHeight() *mScale);
 
+        //以下所有步骤的思路，均是将点或者大小还原到加载图片大小比例后，再进行处理。
+        float[] values = new float[9];
+        mCurrentMatrix.getValues(values);
+        float scale = values[Matrix.MSCALE_X];
+        //获取裁剪区域的实际长宽==裁剪框的大小
+        int clipWidth = (int) (getClipWidth());
+        int clipHeight = (int) (getClipHeight());
+        RectF imageRectF = getCurrentRectF();
+        float curWidth = imageRectF.width();
+        float curHeight = imageRectF.height();
         //重新计算得出最终裁剪起始点
-        int clipLeft = (int) (mBitmap.getWidth() / 2 - clipWidth / 2 - getActuallyScrollX() / mScale);
-        int clipTop = (int) (mBitmap.getHeight() / 2 - clipHeight / 2 - getActuallyScrollY() / mScale  );
+        int clipLeft = (int) (((int) (curWidth / 2 - clipWidth / 2 - getActuallyScrollX())) / scale);
+        int clipTop = (int) (((int) (curHeight / 2 - clipHeight / 2 - getActuallyScrollY())) / scale);
+
 
         //其中width与height是最终实际裁剪的图片大小,saveBitmap就是最终裁剪的图片
         Bitmap saveBitmap = Bitmap.createBitmap(clipWidth, clipHeight, Bitmap.Config.ARGB_8888);
@@ -293,18 +319,14 @@ public class ClipImageView extends android.support.v7.widget.AppCompatImageView 
         //计算显示与实际裁剪的大小
         int showRight = clipWidth;
         int showBottom = clipHeight;
-        int cropRight = clipLeft + clipWidth;
-        int cropBottom = clipTop + clipHeight;
-        //裁剪超出图片边界超出边界
-//        if (cropRight > mBitmap.getWidth()) {
-//            cropRight = mBitmap.getWidth();
-//            showRight = mBitmap.getWidth() - clipLeft;
-//        }
-//        if (cropBottom > mBitmap.getHeight()) {
-//            cropBottom = mBitmap.getHeight();
-//            showBottom = mBitmap.getHeight() - clipTop;
-//        }
-        Rect cropRect = new Rect(Math.abs(clipLeft), Math.abs(clipTop), cropRight, cropBottom);
+        int cropRight = (int) (clipLeft + clipWidth / scale);
+        int cropBottom = (int) (clipTop + clipHeight / scale);
+
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setFilterBitmap(true);
+        paint.setDither(true);
+        Rect cropRect = new Rect(clipLeft, clipTop, cropRight, cropBottom);
         Rect showRect = new Rect(0, 0, showRight, showBottom);
         canvas.drawBitmap(mBitmap, cropRect, showRect, new Paint());
         return saveBitmap;

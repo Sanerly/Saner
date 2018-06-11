@@ -157,7 +157,7 @@ public class ClipLayout extends FrameLayout implements ClipBorderView.onBorderLi
         //保存图片
         String folder = Environment.getExternalStorageDirectory() + "/" + mContext.getPackageName() + "/" + "Saner";
         SelPhotoUtil.createFolder(folder, SelPhotoUtil.MODE_UNCOVER);
-        String fileName = folder + File.separator + Calendar.getInstance().getTime().toString() + ".jpg";
+        String fileName = folder + File.separator + Calendar.getInstance().getTime().toString() + ".png";
         LogUtil.loge("裁剪之后的图片路径 = " + folder);
         SelPhotoUtil.createFile(fileName, SelPhotoUtil.MODE_COVER);
         SelPhotoUtil.saveBitmaps(mContext, bitmap, new File(fileName));
